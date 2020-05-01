@@ -117,6 +117,13 @@
 <script>
 
   var frag = window.location.hash.split('#')[1];
+  try{
+    frag = atob(frag.toString());
+  }
+  catch{
+
+  }
+
   if(frag == undefined){
     // outgoing
     document.getElementById('create').addEventListener('click', function(){
@@ -125,7 +132,7 @@
       var frag = [];
       frag.push({'f':f, 't':t});
       var frag = JSON.stringify(frag);
-      window.location.hash = encodeURIComponent(frag);
+      window.location.hash = btoa(frag);
       window.location.reload();
     });
   }
@@ -155,7 +162,7 @@
     for(var i=0; i < msgElm.length; i++){
       msgElm[i].style.display = 'block';
     }
-    frag = JSON.parse(decodeURIComponent(frag));
+    frag = JSON.parse(frag);
     var f = frag[0]['f'];
     var t = frag[0]['t'];
     //var out = [{'f': t, 't': f}];
@@ -172,7 +179,7 @@
       //window.location.replace = encodeURIComponent(window.location+'/#'+frag);
       var content = document.getElementById('content');
       addContent(content, frag);
-      window.open('sms:+1' + t.toString() + '&body=' + '.https://okcody.github.io/text/#' + encodeURIComponent(JSON.stringify(frag))) + ".";
+      window.open('sms:+1' + t.toString() + '&body=' + 'localhost:4000#' + btoa(JSON.stringify(frag)));
       document.getElementById('input').value = '';
     });
 
