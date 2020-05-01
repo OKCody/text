@@ -179,7 +179,7 @@
       //window.location.replace = encodeURIComponent(window.location+'/#'+frag);
       var content = document.getElementById('content');
       addContent(content, frag);
-      window.open('sms:+1' + t.toString() + '&body=' + 'localhost:4000#' + btoa(JSON.stringify(frag)));
+      window.open('sms:+1' + t.toString() + '&body=' + 'https://okcody.github.io/text/#' + btoa(JSON.stringify(frag)));
       document.getElementById('input').value = '';
     });
 
