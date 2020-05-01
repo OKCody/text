@@ -1,0 +1,179 @@
+<html>
+<style>
+  body{
+    font-family: monospace;
+    margin: 0px;
+    overscroll-behavior: none;
+    overflow-y: hidden;
+  }
+  #content{
+    width: calc(100% - 2em);
+    padding: 1em;
+  }
+  .msg{
+    display: block;
+    line-height: 2em;
+    width: 100%;
+    margin-top: .25em;
+  }
+  .received{
+    text-align: left;
+    color: green;
+  }
+  .sent{
+    text-align: right;
+    color: blue;
+  }
+  #write{
+    display: block;
+    position: absolute;
+    bottom: -.1em;
+    width: 100%;
+    height: 4em;
+    border-top: solid 2px #adadad;
+  }
+  #input{
+    height: 4em;
+    width: calc(100% - 5em - 1px);
+    float: left;
+    outline-style: none;
+    resize: none;
+    overflow: auto;
+    border: none;
+    font-family: monospace;
+  }
+  #send{
+    display: block;
+    height: 4em;
+    width: 4em;
+    float: left;
+    line-height: 4em;
+    vertical-align: middle;
+    text-align: center;
+    background-color: transparent;
+    border-left: solid 2px #adadad;
+    text-decoration: none;
+    color: #adadad;
+  }
+  #new{
+    display: block;
+    width: calc(100%);
+    height: 100%;
+    background-color: pink;
+  }
+  .message{
+    display: none;
+  }
+  #title{
+    color: yellow;
+    width: 100%;
+    text-align: center;
+    padding-top: 3em;
+    margin-bottom: 3em;
+  }
+  .subtitle{
+    color: #FFF;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1em;
+  }
+  .phone{
+    font-size: 2em;
+    text-align: center;
+    vertical-align: middle;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    outline-style: none;
+  }
+  #create{
+    font-size: 2em;
+    color: white;
+    margin-top: 2em;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: solid 1px purple;
+    border-radius: 7px;
+    width: 5em;
+    text-align: center;
+    vertical-align: middle;
+    background-color: purple;
+  }
+</style>
+<body>
+  <div id='new'>
+    <h1 id='title'>Create New Thread</h1>
+    <h2 class='subtitle'>From</h2>
+    <input id='f' type='tel' class='phone'></input>
+    <h2 class='subtitle'>To</h2>
+    <input id='t' type='tel' class='phone'></input>
+    <div id='create'>Create</div>
+  </div>
+</body>
+<script>
+
+  var frag = window.location.hash.split('#')[1];
+  if(frag == undefined){
+    // outgoing
+    document.getElementById('create').addEventListener('click', function(){
+      var f = document.getElementById('f').value;
+      var t = document.getElementById('t').value;
+      var frag = [];
+      frag.push({'f':f, 't':t});
+      var frag = JSON.stringify(frag);
+      window.location.hash = encodeURIComponent(frag);
+      window.location.reload();
+    });
+  }
+  else{
+    function addContent(content, frag){
+      console.log(frag);
+      content.innerHTML = '';
+      for(var msg = 1; msg < frag.length; msg++){
+        var child = document.createElement('div');
+        child.classList.add('msg');
+        //console.log(frag[msg][f])
+        if(frag[msg]['t'] == t){
+            // add left class
+            child.classList.add('received');
+        }
+        else{
+            // add right class
+            child.classList.add('sent');
+        }
+        child.innerText = frag[msg]['m'];
+        content.appendChild(child);
+      }
+    }
+    // incoming
+    document.getElementsByTagName('body')[0].innerHTML = "<div id='content' class='message'></div><div id='write' class='message'><textarea id='input' class='message'></textarea><a id='send' class='message'>Send</a></div>";
+    var msgElm = document.getElementsByClassName('message');
+    for(var i=0; i < msgElm.length; i++){
+      msgElm[i].style.display = 'block';
+    }
+    frag = JSON.parse(decodeURIComponent(frag));
+    var f = frag[0]['f'];
+    var t = frag[0]['t'];
+    var out = [{'f': t, 't': f}];
+    var content = document.getElementById('content');
+    addContent(content, frag);
+
+    document.getElementById('send').addEventListener('click', function(){
+      var text = document.getElementById('input').value
+      //var frag = window.location.hash.split('#')[1];
+      //var frag = JSON.parse(decodeURIComponent(frag));
+      frag.push({'f': f, 't':t, 'm':text});
+      //var frag = JSON.stringify(frag);
+      //window.location.replace = encodeURIComponent(window.location+'/#'+frag);
+      var content = document.getElementById('content');
+      addContent(content, frag);
+      window.open('sms:+1' + f.toString() + '&body=' + 'localhost:4000/#' + encodeURIComponent(JSON.stringify(frag)));
+      document.getElementById('input').value = '';
+    });
+
+  }
+
+
+</script>
+</html>
